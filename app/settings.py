@@ -55,6 +55,12 @@ class Settings(BaseSettings):
     password = quote_plus(self.db_password.get_secret_value())
     return f"postgresql+asyncpg://{user}:{password}@{self.db_host}:{self.db_port}/{self.db_name}"
 
+  @property
+  def sync_database_url(self) -> str:
+    user = quote_plus(self.db_user.get_secret_value())
+    password = quote_plus(self.db_password.get_secret_value())
+    return f"postgresql+psycopg://{user}:{password}@{self.db_host}:{self.db_port}/{self.db_name}"
+
 
 @lru_cache
 def get_settings() -> Settings:
