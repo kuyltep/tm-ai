@@ -13,18 +13,18 @@ class Settings(BaseSettings):
   port: int = 8000
   host: str = "0.0.0.0"
 
-  db_host: str = "localhost"
-  db_port: int = 5432
-  db_user: SecretStr = SecretStr("postgres")
-  db_password: SecretStr = SecretStr("postgres")
-  db_name: str = "talent_mind"
+  db_host: str
+  db_port: int
+  db_user: SecretStr
+  db_password: SecretStr
+  db_name: str
 
   gemini_api_key: SecretStr = SecretStr("")
 
-  api_key: SecretStr = SecretStr("change-me")
+  api_key: SecretStr
 
-  converter_api_key: SecretStr = SecretStr("")
-  converter_url: AnyHttpUrl = AnyHttpUrl("http://ffmpeg-converter:80/api/v1/convert")
+  converter_api_key: SecretStr
+  converter_url: AnyHttpUrl
 
   cors_origins: list[str] = Field(default_factory=lambda: ["*"])
   log_level: str = "INFO"
@@ -54,6 +54,7 @@ class Settings(BaseSettings):
     user = quote_plus(self.db_user.get_secret_value())
     password = quote_plus(self.db_password.get_secret_value())
     return f"postgresql+asyncpg://{user}:{password}@{self.db_host}:{self.db_port}/{self.db_name}"
+
 
 @lru_cache
 def get_settings() -> Settings:

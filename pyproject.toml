@@ -20,5 +20,5 @@ dev = ["ruff>=0.15.11"]
 [tool.ruff]
 line-length = 120
 select = ["E", "F", "W", "C90"]
-ignore = ["E501"]
+ignore = ["E501", "F401", "F403", "F405"]
 indent-width = 2

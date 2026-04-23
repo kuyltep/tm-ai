@@ -5,12 +5,13 @@ from app.api.v1.analyze.schemas import AnalysisErrorCode
 
 
 class ErrorDetail(BaseModel):
-    code: str = Field(..., description="Error code identifier")
-    message: str = Field(..., description="Human-readable error message")
-    details: Any | None = Field(default=None, description="Additional error details")
+  code: str = Field(..., description="Error code identifier")
+  message: str = Field(..., description="Human-readable error message")
+  details: Any | None = Field(default=None, description="Additional error details")
+
 
 class BaseErrorResponse(BaseModel):
-    error: ErrorDetail
+  error: ErrorDetail
 
 
 class AppError(Exception):
