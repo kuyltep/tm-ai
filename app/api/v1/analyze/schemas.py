@@ -6,8 +6,6 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict, Field
 
 
-
-
 class AnalysisError(BaseModel):
   code: AnalysisErrorCode
   message: str
@@ -19,7 +17,7 @@ class CreateAnalysisResponse(BaseModel):
 
 
 class AnalysisResponse(BaseModel):
-  analysis_id: UUID
+  id: UUID | None = None
   user_id: UUID | None = None
   status: AnalysisStatus
   progress_stage: AnalysisStatus

@@ -79,6 +79,7 @@ class AnalysisService:
     if analysis is None:
       return None
     response = AnalysisResponse.model_validate(analysis, from_attributes=True)
+    response.id = analysis.id
     if analysis.error_code or analysis.error_message:
       response = response.model_copy(
         update={
@@ -97,10 +98,9 @@ class AnalysisService:
     content_type: str,
     session_factory: async_sessionmaker[AsyncSession],
   ) -> None:
-    attempts: list[dict] = []
     try:
       await asyncio.wait_for(
-        self._run_pipeline(analysis_id, source_path, content_type, attempts, session_factory),
+        self._run_pipeline(analysis_id, source_path, content_type, session_factory),
         timeout=ANALYSIS_TIMEOUT_SECONDS,
       )
     except TimeoutError:
@@ -125,7 +125,7 @@ class AnalysisService:
       await self._mark_failed(
         analysis_id, AnalysisStatus.FAILED, AnalysisErrorCode.PROVIDER_ERROR, exc.message, session_factory
       )
-    except Exception as exc:  # noqa: BLE001 - background jobs must never crash the server
+    except Exception as exc:  
       logger.exception("analysis pipeline failed", extra={"analysis_id": str(analysis_id)})
       await self._mark_failed(
         analysis_id,
@@ -142,7 +142,6 @@ class AnalysisService:
     analysis_id: UUID,
     source_path: Path,
     content_type: str,
-    attempts: list[dict],
     session_factory: async_sessionmaker[AsyncSession],
   ) -> None:
     async with session_factory() as db:
@@ -163,7 +162,7 @@ class AnalysisService:
       await analysis_repository.set_progress(db, analysis_id, status=AnalysisStatus.RUNNING)
       await db.commit()
 
-    result, _model_attempts = await analyze_audio_with_cascade(audio_path, str(analysis_id), attempts)
+    result = await analyze_audio_with_cascade(audio_path, str(analysis_id))
 
     async with session_factory() as db:
       await analysis_repository.complete(db, analysis_id, result=result)
@@ -182,8 +181,8 @@ class AnalysisService:
       await analysis_repository.fail(db, analysis_id, status=status, code=code, message=message)
       await db.commit()
     logger.warning(
-      "analysis failed",
-      extra={"analysis_id": str(analysis_id), "stage": status.value},
+      "analysis failed: %s", message,
+      extra={"analysis_id": str(analysis_id), "stage": status.value, "error_code": code.value},
     )
 
 

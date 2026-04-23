@@ -21,8 +21,8 @@ router = APIRouter(prefix="/analyses", tags=["analyses"], dependencies=[Depends(
 )
 async def create_analysis(
   background_tasks: BackgroundTasks,
-  files: Annotated[list[UploadFile], File(description="One or more audio/video files")],
-  user_id: Annotated[UUID | None, Form()] = None,
+  files: list[UploadFile] = File(..., description="One or more audio/video files"),
+  user_id: UUID | None = Form(default=None),
   session_factory: async_sessionmaker[AsyncSession] = Depends(get_session_factory),
   db: AsyncSession = Depends(get_db),
 ) -> CreateAnalysisResponse:

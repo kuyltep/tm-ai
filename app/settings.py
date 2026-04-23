@@ -19,7 +19,7 @@ class Settings(BaseSettings):
   db_password: SecretStr
   db_name: str
 
-  gemini_api_key: SecretStr = SecretStr("")
+  google_api_key: SecretStr = SecretStr("")
 
   api_key: SecretStr
 
