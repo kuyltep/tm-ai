@@ -1,5 +1,8 @@
 from fastapi.security import APIKeyHeader
 from fastapi import Depends
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+
+from app.db.database import AsyncSessionLocal
 from app.exceptions import UnauthorizedAppError
 from app.settings import get_settings
 
@@ -19,3 +22,7 @@ def check_api_key(api_key: str = Depends(api_key_header)) -> None:
     raise UnauthorizedAppError("Invalid api key was provided")
 
   return
+
+
+def get_session_factory() -> async_sessionmaker[AsyncSession]:
+  return AsyncSessionLocal

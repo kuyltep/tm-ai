@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.api.v1.analyze import router as analyze_router
+from app.api.v1.analyze.router import router as analyze_router
 
 v1_router = APIRouter(prefix="/v1")
 

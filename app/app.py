@@ -1,8 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.exceptions import RequestValidationError
 
-from app.api.health import router as health_router
-from app.api.v1.analyze.router import router as analysis_router
+from app.api.router import api_router
 from app.handlers import app_exception_handler, http_exception_handler, validation_exception_handler
 from app.exceptions import AppError
 from app.middlewares import add_cors_middleware, RequestIdMiddleware
@@ -20,8 +19,7 @@ def app() -> FastAPI:
   # application.add_middleware(ApiKeyMiddleware)
   application.add_middleware(RequestIdMiddleware)
 
-  application.include_router(health_router)
-  application.include_router(analysis_router)
+  application.include_router(api_router)
 
   application.add_exception_handler(RequestValidationError, validation_exception_handler)
   application.add_exception_handler(HTTPException, http_exception_handler)
